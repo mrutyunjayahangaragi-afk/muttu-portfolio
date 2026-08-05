@@ -1,8 +1,7 @@
 import "server-only"
 
-import { createStaticClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import type { ContactMessage } from "@/types"
-import { unstable_cache } from "next/cache"
 
 export interface MessageStats {
   total: number
@@ -21,31 +20,31 @@ export interface MessageAnalytics {
   responseRate: number
 }
 
-async function fetchContactMessages(): Promise<ContactMessage[]> {
+export async function getContactMessages(): Promise<ContactMessage[]> {
   try {
-    const supabase = createStaticClient()
+    const supabase = await createClient()
     const { data, error } = await supabase
       .from("contact_messages")
       .select("*")
       .order("created_at", { ascending: false })
 
-    if (error || !data) return []
+    if (error || !data) {
+      if (error) console.error("Error fetching contact messages:", error.message)
+      return []
+    }
 
     return data.map((msg) => ({
       ...msg,
+      full_name: msg.full_name || msg.name || "Anonymous",
       name: msg.full_name || msg.name || "Anonymous",
       read: msg.is_read ?? msg.read ?? false,
+      is_read: msg.is_read ?? msg.read ?? false,
     })) as ContactMessage[]
   } catch (err) {
+    console.error("Exception fetching contact messages:", err)
     return []
   }
 }
-
-export const getContactMessages = unstable_cache(
-  async () => fetchContactMessages(),
-  ["contact-messages-data"],
-  { revalidate: 60, tags: ["messages"] }
-)
 
 export async function getMessageStats(): Promise<MessageStats> {
   const messages = await getContactMessages()
