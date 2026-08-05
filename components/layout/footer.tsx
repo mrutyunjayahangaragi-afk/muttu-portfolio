@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import Link from "next/link"
-import { Code2, Link2, MessageSquare, Mail, ExternalLink } from "lucide-react"
+import { Code2, Link2, MessageSquare, Mail, ExternalLink, ArrowUp } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { Magnetic } from "@/components/animations/magnetic"
 import { ALL_NAV_ITEMS } from "@/components/layout/navbar"
@@ -31,8 +31,12 @@ export function Footer({ logoText = "<Dev/>", navCounts }: FooterProps) {
     })
   }, [navCounts])
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
   return (
-    <footer className="relative bg-black/40 backdrop-blur-md overflow-hidden">
+    <footer id="footer" className="relative bg-black/60 backdrop-blur-md overflow-hidden border-t border-white/10">
       {/* Top Animated Gradient Line */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-blue-500/30 via-purple-500/50 to-pink-500/30" />
       
@@ -70,11 +74,22 @@ export function Footer({ logoText = "<Dev/>", navCounts }: FooterProps) {
             </ul>
           </div>
 
-          {/* Social */}
+          {/* Social & Back to Top */}
           <div className="space-y-4">
-            <h3 className="text-xs font-semibold tracking-widest text-white/80 uppercase">
-              Connect
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-semibold tracking-widest text-white/80 uppercase">
+                Connect
+              </h3>
+              <button
+                type="button"
+                onClick={scrollToTop}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-xs text-white/60 border border-white/10 transition-all hover:bg-white/10 hover:text-white"
+                aria-label="Back to top"
+              >
+                <ArrowUp size={12} />
+                Top
+              </button>
+            </div>
             <div className="flex gap-2">
               {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
                 <Magnetic key={label}>
@@ -98,7 +113,7 @@ export function Footer({ logoText = "<Dev/>", navCounts }: FooterProps) {
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-white/40 sm:flex-row">
           <p>© {year} {logoText}. All rights reserved.</p>
           <p className="flex items-center gap-1.5 hover:text-white/60 transition-colors">
-            Built with Next.js, TypeScript &amp; Supabase
+            Built with Next.js &amp; Supabase
             <ExternalLink size={12} className="opacity-70" />
           </p>
         </div>

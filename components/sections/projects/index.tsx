@@ -1,16 +1,9 @@
-/**
- * components/sections/projects/index.tsx
- *
- * Homepage #projects section — Server Component.
- * Shows a featured carousel + first 6 projects with a "View All" CTA.
- */
 import { Suspense } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { getProjects, getFeaturedProjects, getProjectStats } from "@/services/projects"
 import { ProjectCard } from "./project-card"
 import { ProjectsStatsBanner } from "./projects-stats-banner"
-import { EmptyState } from "@/components/ui/empty-state"
 
 function ProjectsSkeleton() {
   return (
@@ -24,21 +17,13 @@ function ProjectsSkeleton() {
 
 async function ProjectsData() {
   const [projects, featured, stats] = await Promise.all([
-    getProjects(),
-    getFeaturedProjects(),
-    getProjectStats(),
+    getProjects().catch(() => []),
+    getFeaturedProjects().catch(() => []),
+    getProjectStats().catch(() => ({ total: 0, featured: 0, technologies: 0, completed: 0 })),
   ])
 
   if (projects.length === 0) {
-    return (
-      <div className="py-12">
-        <EmptyState
-          icon="projects"
-          title="No projects available yet"
-          description="Every project showcased on this site is dynamically fetched from the database. Currently, there are no items to display."
-        />
-      </div>
-    )
+    return null
   }
 
   const preview = projects.slice(0, 6)
@@ -64,7 +49,7 @@ async function ProjectsData() {
       {/* All projects preview */}
       <div className="mb-10">
         <h3 className="text-sm font-mono text-white/40 uppercase tracking-widest mb-6">
-          All Projects
+          Recent Projects
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {preview.map((p, i) => (
@@ -74,17 +59,15 @@ async function ProjectsData() {
       </div>
 
       {/* View all CTA */}
-      {projects.length > 6 && (
-        <div className="text-center">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:from-blue-500 hover:to-purple-500 transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
-          >
-            View All {projects.length} Projects
-            <ArrowRight size={18} />
-          </Link>
-        </div>
-      )}
+      <div className="text-center pt-6">
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:from-blue-500 hover:to-purple-500 transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40"
+        >
+          View All Projects
+          <ArrowRight size={18} />
+        </Link>
+      </div>
     </>
   )
 }
@@ -98,14 +81,14 @@ export function ProjectsSection() {
     >
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="absolute top-0 right-0 w-[600px] h-[500px] rounded-full opacity-[0.06] blur-[120px]"
-          style={{ background: "radial-gradient(ellipse, #3b82f6, transparent 70%)" }} />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[400px] rounded-full opacity-[0.06] blur-[100px]"
-          style={{ background: "radial-gradient(ellipse, #a855f7, transparent 70%)" }} />
-        <div className="absolute inset-0 opacity-[0.02]" style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.5) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
-        }} />
+        <div
+          className="absolute top-0 right-0 w-[600px] h-[500px] rounded-full opacity-[0.06] blur-[120px]"
+          style={{ background: "radial-gradient(ellipse, #3b82f6, transparent 70%)" }}
+        />
+        <div
+          className="absolute bottom-0 left-0 w-[500px] h-[400px] rounded-full opacity-[0.06] blur-[100px]"
+          style={{ background: "radial-gradient(ellipse, #a855f7, transparent 70%)" }}
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,12 +1,6 @@
-/**
- * components/sections/skills/index.tsx
- *
- * Server Component — fetches all skills and stats, passes to client island.
- */
 import { Suspense } from "react"
 import { getSkills, getSkillStats } from "@/services/skills"
 import { SkillsContent } from "./skills-content"
-import { EmptyState } from "@/components/ui/empty-state"
 
 function SkillsSkeleton() {
   return (
@@ -27,18 +21,13 @@ function SkillsSkeleton() {
 }
 
 async function SkillsData() {
-  const [skills, stats] = await Promise.all([getSkills(), getSkillStats()])
+  const [skills, stats] = await Promise.all([
+    getSkills().catch(() => []),
+    getSkillStats().catch(() => ({ total: 0, byCategory: {}, avgProficiency: 0 })),
+  ])
 
   if (skills.length === 0) {
-    return (
-      <div className="py-12">
-        <EmptyState
-          icon="default"
-          title="Skills Coming Soon"
-          description="Every piece of content shown on this public portfolio comes from the database. No skills have been added yet."
-        />
-      </div>
-    )
+    return null
   }
 
   return <SkillsContent skills={skills} stats={stats} />
@@ -51,7 +40,6 @@ export function SkillsSection() {
       className="relative bg-[#020408] overflow-hidden py-24"
       aria-label="Skills and technologies"
     >
-      {/* Background */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div
           className="absolute top-0 left-1/4 w-[700px] h-[500px] rounded-full opacity-[0.07] blur-[120px]"
@@ -61,24 +49,15 @@ export function SkillsSection() {
           className="absolute bottom-0 right-1/4 w-[600px] h-[500px] rounded-full opacity-[0.07] blur-[120px]"
           style={{ background: "radial-gradient(ellipse, #a855f7, transparent 70%)" }}
         />
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(to right, rgba(255,255,255,0.5) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
         <div className="text-center mb-16">
           <p className="text-xs font-mono text-blue-400 uppercase tracking-widest mb-3">
             Technical Expertise
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Skills &{" "}
+            Skills &amp;{" "}
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Technologies
             </span>

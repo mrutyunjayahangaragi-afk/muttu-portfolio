@@ -2,10 +2,12 @@ import { getMediaGallery } from "@/services/gallery"
 import { GalleryCarousel } from "./gallery-carousel"
 
 export async function GallerySection() {
-  const items = await getMediaGallery()
+  const items = await getMediaGallery().catch(() => [])
+
+  if (items.length === 0) return null
 
   return (
-    <section id="gallery" className="py-24 relative overflow-hidden">
+    <section id="gallery" className="py-24 relative overflow-hidden border-t border-white/5 bg-[#020408]">
       {/* Glow background accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none" />
 
