@@ -89,9 +89,11 @@ export function AdminLoginForm() {
       return
     }
 
-    // Successful auth — use window.location.href to guarantee auth cookies reach Vercel middleware
+    // Successful auth — reset attempts & navigate to dashboard after cookie flush
     reset()
-    window.location.href = "/admin/dashboard"
+    setTimeout(() => {
+      window.location.href = "/admin/dashboard"
+    }, 100)
   }
 
   if (isLocked) {

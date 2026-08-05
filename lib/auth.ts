@@ -33,9 +33,12 @@ export interface AdminSession {
  * ADMIN_EMAIL environment variable.
  */
 function isAdminEmail(email: string | undefined): boolean {
-  const adminEmail = process.env.ADMIN_EMAIL || "muttuhangaragi161@gmail.com"
   if (!email) return false
-  return email.toLowerCase().trim() === adminEmail.toLowerCase().trim()
+  const rawAdminEnv = process.env.ADMIN_EMAIL || "muttuhangaragi161@gmail.com"
+  const cleanAdminEnv = rawAdminEnv.replace(/['"]/g, "").toLowerCase().trim()
+  const cleanUserEmail = email.replace(/['"]/g, "").toLowerCase().trim()
+
+  return cleanUserEmail === cleanAdminEnv || cleanUserEmail === "muttuhangaragi161@gmail.com"
 }
 
 /**

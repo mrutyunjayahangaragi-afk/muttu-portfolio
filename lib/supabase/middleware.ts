@@ -74,11 +74,11 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin", request.url))
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || "muttuhangaragi161@gmail.com"
-    const userEmail = user.email?.toLowerCase().trim()
-    const targetAdminEmail = adminEmail.toLowerCase().trim()
+    const rawAdminEnv = process.env.ADMIN_EMAIL || "muttuhangaragi161@gmail.com"
+    const cleanAdminEnv = rawAdminEnv.replace(/['"]/g, "").toLowerCase().trim()
+    const cleanUserEmail = user.email?.replace(/['"]/g, "").toLowerCase().trim()
 
-    if (!userEmail || userEmail !== targetAdminEmail) {
+    if (!cleanUserEmail || (cleanUserEmail !== cleanAdminEnv && cleanUserEmail !== "muttuhangaragi161@gmail.com")) {
       return NextResponse.redirect(new URL("/admin?unauthorized=1", request.url))
     }
   }
