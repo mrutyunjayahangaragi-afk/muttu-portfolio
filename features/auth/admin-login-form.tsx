@@ -89,12 +89,9 @@ export function AdminLoginForm() {
       return
     }
 
-    // Successful auth — the proxy will enforce admin email check on /admin/dashboard
+    // Successful auth — use window.location.href to guarantee auth cookies reach Vercel middleware
     reset()
-    startTransition(() => {
-      router.push("/admin/dashboard")
-      router.refresh()
-    })
+    window.location.href = "/admin/dashboard"
   }
 
   if (isLocked) {
