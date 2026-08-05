@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import type { Hero3DConfig, Hero3DContent } from "@/types/hero"
 
 // Lazy-load the heavy 3D canvas — only on desktop, loaded after hydration
 const HeroScene = dynamic(
@@ -10,14 +11,10 @@ const HeroScene = dynamic(
   { ssr: false, loading: () => <HeroSceneFallback /> }
 )
 
-/**
- * Lightweight fallback shown while the 3D scene loads or on mobile.
- */
 function HeroSceneFallback() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="relative h-48 w-48">
-        {/* Concentric glowing rings as a visual placeholder */}
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
@@ -35,11 +32,12 @@ function HeroSceneFallback() {
   )
 }
 
-/**
- * HeroRight renders the interactive 3D scene on desktop, or a stylised
- * animation on mobile to avoid performance issues.
- */
-export function HeroRight() {
+interface HeroRightProps {
+  config?: Hero3DConfig
+  content?: Hero3DContent
+}
+
+export function HeroRight({ config, content }: HeroRightProps) {
   const isMobile = useMediaQuery("(max-width: 1024px)")
 
   return (
@@ -68,7 +66,7 @@ export function HeroRight() {
         <div className="absolute right-4 bottom-4 h-6 w-6 rounded-br-lg border-r-2 border-b-2 border-blue-500/50" />
 
         {/* 3D Scene or mobile fallback */}
-        {isMobile ? <MobileVisual /> : <HeroScene />}
+        {isMobile ? <MobileVisual /> : <HeroScene config={config} content={content} />}
 
         {/* Scan line overlay */}
         <motion.div
@@ -82,21 +80,16 @@ export function HeroRight() {
       {/* Status indicator */}
       <div className="absolute -bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/80 px-4 py-1.5 backdrop-blur-md">
         <span className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-        <span className="font-mono text-xs text-white/60">SYSTEM ONLINE</span>
+        <span className="font-mono text-xs text-white/60">3D WORKSPACE ONLINE</span>
       </div>
     </motion.div>
   )
 }
 
-/**
- * MobileVisual is a visually rich 2D animation used on mobile instead of WebGL.
- */
 function MobileVisual() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      {/* Tech orb */}
       <div className="relative">
-        {/* Outer rings */}
         {[120, 160, 200].map((size, i) => (
           <motion.div
             key={size}
@@ -114,7 +107,6 @@ function MobileVisual() {
           />
         ))}
 
-        {/* Orbiting dots */}
         {[0, 120, 240].map((deg, i) => (
           <motion.div
             key={deg}
@@ -142,7 +134,6 @@ function MobileVisual() {
           </motion.div>
         ))}
 
-        {/* Center core */}
         <motion.div
           className="relative h-24 w-24 rounded-full"
           style={{
@@ -155,7 +146,6 @@ function MobileVisual() {
         </motion.div>
       </div>
 
-      {/* Floating tech badges */}
       {[
         { label: "React", pos: "top-8 left-8" },
         { label: "Next.js", pos: "top-8 right-8" },

@@ -6,14 +6,16 @@ import { HeroBackground } from "./hero-background"
 import { HeroLeft } from "./hero-left"
 import { HeroRight } from "./hero-right"
 import { ScrollIndicator } from "./scroll-indicator"
-import type { HeroProfile, HeroStat } from "@/types/hero"
+import type { HeroProfile, HeroStat, Hero3DConfig, Hero3DContent } from "@/types/hero"
 
 interface HeroContentProps {
   profile: HeroProfile | null
   stats: HeroStat[]
+  hero3DConfig?: Hero3DConfig
+  hero3DContent?: Hero3DContent
 }
 
-export function HeroContent({ profile, stats }: HeroContentProps) {
+export function HeroContent({ profile, stats, hero3DConfig, hero3DContent }: HeroContentProps) {
   const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -38,7 +40,7 @@ export function HeroContent({ profile, stats }: HeroContentProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[calc(100vh-80px)]">
             <HeroLeft profile={profile} stats={stats} />
             <div className="h-[400px] lg:h-[600px]">
-              <HeroRight />
+              <HeroRight config={hero3DConfig} content={hero3DContent} />
             </div>
           </div>
         </div>

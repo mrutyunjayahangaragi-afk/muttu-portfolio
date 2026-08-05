@@ -1,20 +1,23 @@
-/**
- * components/sections/hero/index.tsx
- *
- * Server Component — fetches hero profile + stats from the database,
- * then passes them as props to the client island (HeroContent).
- * Zero hardcoded personal data.
- */
 import { Suspense } from "react"
-import { getHeroProfile, getHeroStats } from "@/services/hero"
+import { getHeroProfile, getHeroStats, getHero3DConfig, getHero3DContent } from "@/services/hero"
 import { HeroContent } from "./hero-content"
 
 async function HeroData() {
-  const [profile, stats] = await Promise.all([
-    getHeroProfile(),
-    getHeroStats(),
+  const [profile, stats, hero3DConfig, hero3DContent] = await Promise.all([
+    getHeroProfile().catch(() => null),
+    getHeroStats().catch(() => []),
+    getHero3DConfig(),
+    getHero3DContent(),
   ])
-  return <HeroContent profile={profile} stats={stats} />
+
+  return (
+    <HeroContent
+      profile={profile}
+      stats={stats}
+      hero3DConfig={hero3DConfig}
+      hero3DContent={hero3DContent}
+    />
+  )
 }
 
 export function HeroSection() {
