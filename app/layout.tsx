@@ -12,6 +12,7 @@ import { SmoothScrollProvider } from "@/components/layout/smooth-scroll-provider
 import { PageTransition } from "@/components/layout/page-transition"
 import { Toaster } from "@/components/ui/toaster"
 import { AiChatWrapper } from "@/features/ai/ai-chat-wrapper"
+import { AnalyticsTracker } from "@/components/analytics/analytics-tracker"
 
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -142,6 +143,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="bg-black font-[family-name:var(--font-inter)] text-white antialiased">
+        <AnalyticsTracker />
         {isAdminRoute ? (
           // Admin routes: no public chrome, no smooth scroll, no custom cursor
           <>
