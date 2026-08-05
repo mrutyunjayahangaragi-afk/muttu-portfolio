@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS public.fun_facts (
   "order" INTEGER DEFAULT 0
 );
 
--- ─── RLS ──────────────────────────────────────────────────────────────────
+-- ─── RLS Policies ─────────────────────────────────────────────────────────
 ALTER TABLE public.about_profile      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.about_stats        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.journey_milestones ENABLE ROW LEVEL SECURITY;
@@ -90,29 +90,28 @@ DROP POLICY IF EXISTS "Admin all journey_milestones"   ON public.journey_milesto
 DROP POLICY IF EXISTS "Admin all core_values"          ON public.core_values;
 DROP POLICY IF EXISTS "Admin all fun_facts"            ON public.fun_facts;
 
-CREATE POLICY "Public read about_profile"
-  ON public.about_profile FOR SELECT USING (true);
-CREATE POLICY "Public read about_stats"
-  ON public.about_stats FOR SELECT USING (true);
-CREATE POLICY "Public read journey_milestones"
-  ON public.journey_milestones FOR SELECT USING (true);
-CREATE POLICY "Public read core_values"
-  ON public.core_values FOR SELECT USING (true);
-CREATE POLICY "Public read fun_facts"
-  ON public.fun_facts FOR SELECT USING (true);
+CREATE POLICY "Public read about_profile"      ON public.about_profile FOR SELECT USING (true);
+CREATE POLICY "Public read about_stats"        ON public.about_stats FOR SELECT USING (true);
+CREATE POLICY "Public read journey_milestones" ON public.journey_milestones FOR SELECT USING (true);
+CREATE POLICY "Public read core_values"        ON public.core_values FOR SELECT USING (true);
+CREATE POLICY "Public read fun_facts"          ON public.fun_facts FOR SELECT USING (true);
 
-CREATE POLICY "Admin all about_profile"
-  ON public.about_profile FOR ALL
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
-CREATE POLICY "Admin all about_stats"
-  ON public.about_stats FOR ALL
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
-CREATE POLICY "Admin all journey_milestones"
-  ON public.journey_milestones FOR ALL
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
-CREATE POLICY "Admin all core_values"
-  ON public.core_values FOR ALL
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
-CREATE POLICY "Admin all fun_facts"
-  ON public.fun_facts FOR ALL
-  USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "Admin all about_profile" ON public.about_profile FOR ALL
+  USING (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+
+CREATE POLICY "Admin all about_stats" ON public.about_stats FOR ALL
+  USING (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+
+CREATE POLICY "Admin all journey_milestones" ON public.journey_milestones FOR ALL
+  USING (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+
+CREATE POLICY "Admin all core_values" ON public.core_values FOR ALL
+  USING (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+
+CREATE POLICY "Admin all fun_facts" ON public.fun_facts FOR ALL
+  USING (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'))
+  WITH CHECK (auth.role() = 'authenticated' OR EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));

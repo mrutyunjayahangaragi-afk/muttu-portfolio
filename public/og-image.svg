@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="og-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#EC4899" />
+    </linearGradient>
+    <radialGradient id="og-glow" cx="80%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#050810" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background Surface -->
+  <rect width="1200" height="630" fill="#050810" />
+  <rect width="1200" height="630" fill="url(#og-glow)" />
+
+  <!-- Glass Border Frame -->
+  <rect x="40" y="40" width="1120" height="550" rx="32" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+
+  <!-- Logo Mark -->
+  <g transform="translate(100, 110)">
+    <rect width="80" height="80" rx="24" fill="#0A0F1D" stroke="url(#og-grad)" stroke-width="3" />
+    <path d="M 24 32 L 14 40 L 24 48" fill="none" stroke="url(#og-grad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 56 32 L 66 40 L 56 48" fill="none" stroke="url(#og-grad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="40" cy="40" r="5" fill="url(#og-grad)" />
+  </g>
+
+  <text x="205" y="158" font-family="system-ui, sans-serif" font-weight="800" font-size="32" fill="#FFFFFF">
+    DEV<tspan fill="url(#og-grad)">&lt;PORTFOLIO/&gt;</tspan>
+  </text>
+
+  <!-- Headline & Title -->
+  <text x="100" y="280" font-family="system-ui, sans-serif" font-weight="800" font-size="56" fill="#FFFFFF">
+    Full-Stack &amp; AI Developer
+  </text>
+
+  <text x="100" y="340" font-family="system-ui, sans-serif" font-weight="600" font-size="28" fill="url(#og-grad)">
+    Computer Science Engineering • Hackathon Winner &amp; Open-Source Creator
+  </text>
+
+  <text x="100" y="410" font-family="system-ui, sans-serif" font-weight="400" font-size="20" fill="#94A3B8" width="900">
+    Building modern, high-performance web applications, AI models, and scalable cloud solutions.
+  </text>
+
+  <!-- Skill Badges -->
+  <g transform="translate(100, 470)">
+    <rect width="130" height="42" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
+    <text x="65" y="26" font-family="monospace" font-size="14" fill="#60A5FA" text-anchor="middle">Next.js 16</text>
+
+    <rect x="145" width="130" height="42" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
+    <text x="210" y="26" font-family="monospace" font-size="14" fill="#C084FC" text-anchor="middle">TypeScript</text>
+
+    <rect x="290" width="130" height="42" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
+    <text x="355" y="26" font-family="monospace" font-size="14" fill="#F472B6" text-anchor="middle">Python AI</text>
+
+    <rect x="435" width="130" height="42" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
+    <text x="500" y="26" font-family="monospace" font-size="14" fill="#34D399" text-anchor="middle">Supabase</text>
+
+    <rect x="580" width="130" height="42" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" />
+    <text x="645" y="26" font-family="monospace" font-size="14" fill="#FBBF24" text-anchor="middle">Tailwind</text>
+  </g>
+</svg>
