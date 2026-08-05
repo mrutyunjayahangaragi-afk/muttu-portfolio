@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS public.backups (
 CREATE TABLE IF NOT EXISTS public.theme_config (
   id                UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   site_name         TEXT NOT NULL DEFAULT 'Dev Portfolio',
+  logo_text         TEXT NOT NULL DEFAULT '<Dev/>',
   logo_url          TEXT,
   favicon_url       TEXT,
   footer_logo_url   TEXT,
@@ -54,6 +55,9 @@ CREATE TABLE IF NOT EXISTS public.theme_config (
   mode              TEXT NOT NULL DEFAULT 'dark' CHECK (mode IN ('light', 'dark', 'system', 'custom')),
   updated_at        TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Schema migration check for logo_text column
+ALTER TABLE public.theme_config ADD COLUMN IF NOT EXISTS logo_text TEXT DEFAULT '<Dev/>';
 
 -- Ensure a single default row in theme_config
 INSERT INTO public.theme_config (id)

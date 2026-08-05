@@ -1496,12 +1496,23 @@ export async function updateThemeConfig(_prevState: ActionResult, formData: Form
   const parsed = ThemeSchema.safeParse(raw)
   if (!parsed.success) return { success: false, error: parsed.error.errors[0].message }
 
-  const { error } = await supabase
+  const { logo_text, ...themeDataWithoutLogo } = parsed.data
+
+  // Try updating with logo_text
+  const { error: fullUpdateErr } = await supabase
     .from("theme_config")
     .update({ ...parsed.data, updated_at: new Date().toISOString() })
     .eq("id", "00000000-0000-0000-0000-000000000099")
 
-  if (error) return { success: false, error: error.message }
+  if (fullUpdateErr) {
+    // Fallback if logo_text column does not exist on theme_config
+    const { error: fallbackErr } = await supabase
+      .from("theme_config")
+      .update({ ...themeDataWithoutLogo, updated_at: new Date().toISOString() })
+      .eq("id", "00000000-0000-0000-0000-000000000099")
+
+    if (fallbackErr) return { success: false, error: fallbackErr.message }
+  }
 
   // Sync to settings table as well if present
   await supabase

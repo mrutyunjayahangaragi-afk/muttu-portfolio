@@ -172,17 +172,7 @@ export async function getBackupsData(): Promise<{
 // ─── 4. Theme Config Service ──────────────────────────────────────────────────
 
 export async function getThemeConfigData(): Promise<ThemeConfigData> {
-  const supabase = await createClient()
-  const { data } = await supabase.from("theme_config").select("*").limit(1).single()
-
-  if (data) {
-    return {
-      logo_text: "<Dev/>",
-      ...data,
-    } as ThemeConfigData
-  }
-
-  return {
+  const defaultTheme: ThemeConfigData = {
     id: "00000000-0000-0000-0000-000000000099",
     site_name: "Dev Portfolio",
     logo_text: "<Dev/>",
@@ -201,6 +191,37 @@ export async function getThemeConfigData(): Promise<ThemeConfigData> {
     mode: "dark",
     updated_at: new Date().toISOString(),
   }
+
+  try {
+    const supabase = await createClient()
+    const { data, error } = await supabase.from("theme_config").select("*").limit(1).single()
+
+    if (!error && data) {
+      return {
+        ...defaultTheme,
+        ...data,
+      } as ThemeConfigData
+    }
+  } catch (err) {
+    // Ignore schema mismatch error on logo_text column
+  }
+
+  // Fallback: check settings table for logo_text & site_name
+  try {
+    const supabase = await createClient()
+    const { data: settingsData } = await supabase.from("settings").select("logo_text, site_name").limit(1).single()
+    if (settingsData) {
+      return {
+        ...defaultTheme,
+        site_name: settingsData.site_name || defaultTheme.site_name,
+        logo_text: settingsData.logo_text || defaultTheme.logo_text,
+      }
+    }
+  } catch (err) {
+    // Ignore fallback errors
+  }
+
+  return defaultTheme
 }
 
 // ─── 5. Database Stats & Health Monitor Service ───────────────────────────────
