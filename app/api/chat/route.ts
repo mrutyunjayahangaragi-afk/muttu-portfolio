@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getPortfolioContext } from "@/services/ai"
 import { getSettings } from "@/services/settings"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { createClient } from "@/lib/supabase/server"
 
 const FALLBACK_MODELS = [
   "google/gemini-2.0-flash-lite-preview-02-05:free",
@@ -45,6 +46,26 @@ function generateLocalRAGResponse(userMessage: string, context: string): string 
 
   const aboutMatch = context.match(/About:\s*(.*)/i)
   return `Hi! I am the Portfolio AI assistant. ${aboutMatch ? aboutMatch[1] : "Welcome to the portfolio!"} Feel free to ask me about core skills, projects, work experience, or contact details!`
+}
+
+async function logAiConversation(userMessage: string, assistantReply: string, ip: string) {
+  try {
+    const supabase = await createClient()
+    const { data: conv } = await supabase
+      .from("ai_conversations")
+      .insert({ visitor_ip: ip, created_at: new Date().toISOString() })
+      .select("id")
+      .single()
+
+    if (conv?.id) {
+      await supabase.from("ai_messages").insert([
+        { conversation_id: conv.id, role: "user", content: userMessage, created_at: new Date().toISOString() },
+        { conversation_id: conv.id, role: "assistant", content: assistantReply, created_at: new Date().toISOString() },
+      ])
+    }
+  } catch (err) {
+    // Ignore DB logging failure silently
+  }
 }
 
 export async function POST(req: Request) {
@@ -95,6 +116,8 @@ export async function POST(req: Request) {
           if (response.ok) {
             const data = await response.json()
             if (data.choices && data.choices[0]?.message?.content) {
+              const reply = data.choices[0].message.content
+              await logAiConversation(userMessage, reply, ip)
               return NextResponse.json(data)
             }
           }
@@ -106,6 +129,8 @@ export async function POST(req: Request) {
 
     // Smart Local Knowledgebase Fallback when API key is unconfigured or offline
     const localReply = generateLocalRAGResponse(userMessage, context)
+    await logAiConversation(userMessage, localReply, ip)
+
     return NextResponse.json({
       choices: [
         {
@@ -116,7 +141,7 @@ export async function POST(req: Request) {
         },
       ],
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chat API Error:", error)
     return NextResponse.json({
       choices: [
