@@ -5,15 +5,16 @@ import { Search, SlidersHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export const CATEGORIES = [
-  { id: "all",         label: "All" },
-  { id: "web",         label: "Web Dev" },
-  { id: "ai",          label: "AI" },
-  { id: "ml",          label: "ML" },
-  { id: "mobile",      label: "Mobile" },
-  { id: "backend",     label: "Backend" },
-  { id: "fullstack",   label: "Full Stack" },
-  { id: "hackathon",   label: "Hackathon" },
-  { id: "open_source", label: "Open Source" },
+  { id: "all",                     label: "All" },
+  { id: "web",                     label: "Web Dev" },
+  { id: "ai",                      label: "AI" },
+  { id: "ml",                      label: "ML" },
+  { id: "mobile",                  label: "Mobile" },
+  { id: "backend",                 label: "Backend" },
+  { id: "fullstack",               label: "Full Stack" },
+  { id: "hackathon",               label: "Hackathon" },
+  { id: "hackathon_participation", label: "Hackathon Participation" },
+  { id: "open_source",             label: "Open Source" },
 ]
 
 export const SORT_OPTIONS = [

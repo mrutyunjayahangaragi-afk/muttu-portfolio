@@ -37,7 +37,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const CATEGORIES = [
-  "web", "ai", "ml", "mobile", "backend", "fullstack", "hackathon", "open_source", "other"
+  "web", "ai", "ml", "mobile", "backend", "fullstack", "hackathon", "hackathon_participation", "open_source", "other"
 ]
 
 // ─── Props ────────────────────────────────────────────────────────────────────

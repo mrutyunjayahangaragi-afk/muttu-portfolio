@@ -17,6 +17,7 @@ const PROJECT_TYPES = [
   "SaaS Platform Architecture",
   "UI/UX Design & Frontend",
   "API & Backend Engineering",
+  "Hackathon Participation",
   "Consulting & Code Audit",
   "Other Inquiry",
 ]
