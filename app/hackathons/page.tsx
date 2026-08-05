@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getHackathons } from "@/services/career"
 import { HackathonsGrid } from "@/features/career/hackathons-grid"
 import { SectionHero } from "@/features/career/section-hero"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export const metadata: Metadata = {
   title: "Hackathons",
@@ -27,7 +28,11 @@ export default async function HackathonsPage() {
           description="Problem statements tackled, solutions built, and lessons learned across hackathons and competitions."
           gradient="from-rose-400 via-pink-400 to-purple-400"
         />
-        <HackathonsGrid hackathons={hackathons} />
+        {hackathons.length === 0 ? (
+          <EmptyState title="Hackathons" message="Content will be available soon." />
+        ) : (
+          <HackathonsGrid hackathons={hackathons} />
+        )}
       </div>
     </main>
   )

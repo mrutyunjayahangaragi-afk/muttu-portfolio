@@ -1,9 +1,12 @@
 "use client"
 
+import { useMemo } from "react"
 import Link from "next/link"
 import { Code2, Link2, MessageSquare, Mail, ExternalLink } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { Magnetic } from "@/components/animations/magnetic"
+import { ALL_NAV_ITEMS } from "@/components/layout/navbar"
+import type { NavDataCounts } from "@/services/navigation"
 
 const SOCIAL_LINKS = [
   { icon: Code2, label: "GitHub", href: "https://github.com" },
@@ -12,19 +15,21 @@ const SOCIAL_LINKS = [
   { icon: Mail, label: "Email", href: "mailto:hello@example.com" },
 ]
 
-const FOOTER_LINKS = [
-  { label: "About", href: "/#about" },
-  { label: "Projects", href: "/#projects" },
-  { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact" },
-]
-
 interface FooterProps {
   logoText?: string
+  navCounts?: NavDataCounts
 }
 
-export function Footer({ logoText = "<Dev/>" }: FooterProps) {
+export function Footer({ logoText = "<Dev/>", navCounts }: FooterProps) {
   const year = new Date().getFullYear()
+
+  const activeLinks = useMemo(() => {
+    if (!navCounts) return ALL_NAV_ITEMS
+    return ALL_NAV_ITEMS.filter((item) => {
+      if (item.key === "home" || item.key === "contact") return true
+      return (navCounts[item.key as keyof NavDataCounts] ?? 1) > 0
+    })
+  }, [navCounts])
 
   return (
     <footer className="relative bg-black/40 backdrop-blur-md overflow-hidden">
@@ -51,12 +56,12 @@ export function Footer({ logoText = "<Dev/>" }: FooterProps) {
             <h3 className="text-xs font-semibold tracking-widest text-white/80 uppercase">
               Navigation
             </h3>
-            <ul className="space-y-2.5">
-              {FOOTER_LINKS.map((link) => (
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
+              {activeLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/50 transition-colors duration-300 hover:text-white"
+                    className="text-xs text-white/50 transition-colors duration-300 hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -91,9 +96,9 @@ export function Footer({ logoText = "<Dev/>" }: FooterProps) {
         <Separator className="mb-8 border-white/5" />
 
         <div className="flex flex-col items-center justify-between gap-4 text-xs text-white/40 sm:flex-row">
-          <p>© {year} Dev Portfolio. All rights reserved.</p>
+          <p>© {year} {logoText}. All rights reserved.</p>
           <p className="flex items-center gap-1.5 hover:text-white/60 transition-colors">
-            Built with Next.js, TypeScript &amp; Tailwind CSS
+            Built with Next.js, TypeScript &amp; Supabase
             <ExternalLink size={12} className="opacity-70" />
           </p>
         </div>

@@ -2,9 +2,10 @@ import type { Metadata } from "next"
 import { getExperience } from "@/services/career"
 import { ExperienceTimeline } from "@/features/career/experience-timeline"
 import { SectionHero } from "@/features/career/section-hero"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export const metadata: Metadata = {
-  title: "Experience",
+  title: "Work Experience",
   description:
     "My professional work experience — roles, companies, responsibilities, and technologies I have worked with.",
   openGraph: {
@@ -27,7 +28,11 @@ export default async function ExperiencePage() {
           description="My professional journey across companies, roles, and technologies."
           gradient="from-blue-400 via-cyan-400 to-teal-400"
         />
-        <ExperienceTimeline items={experience} />
+        {experience.length === 0 ? (
+          <EmptyState title="Work Experience" message="Content will be available soon." />
+        ) : (
+          <ExperienceTimeline items={experience} />
+        )}
       </div>
     </main>
   )

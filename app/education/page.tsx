@@ -2,14 +2,15 @@ import type { Metadata } from "next"
 import { getEducation } from "@/services/career"
 import { EducationTimeline } from "@/features/career/education-timeline"
 import { SectionHero } from "@/features/career/section-hero"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export const metadata: Metadata = {
   title: "Education",
   description:
-    "My academic background — institutions, degrees, CGPA, and extracurricular activities.",
+    "My academic background — institutions, degrees, CGPA, coursework, and extracurricular activities.",
   openGraph: {
-    title: "Education",
-    description: "Academic background — degrees, institutions, and GPA.",
+    title: "Education & Academics",
+    description: "Academic background — degrees, institutions, and CGPA.",
   },
 }
 
@@ -27,7 +28,11 @@ export default async function EducationPage() {
           description="My academic journey — institutions, degrees, and the knowledge I've gained."
           gradient="from-purple-400 via-violet-400 to-indigo-400"
         />
-        <EducationTimeline items={education} />
+        {education.length === 0 ? (
+          <EmptyState title="Education" message="Content will be available soon." />
+        ) : (
+          <EducationTimeline items={education} />
+        )}
       </div>
     </main>
   )

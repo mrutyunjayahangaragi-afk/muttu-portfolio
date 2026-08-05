@@ -1,34 +1,47 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUIStore } from "@/store"
-import type { NavItem } from "@/types"
 import { easings } from "@/lib/design-tokens"
+import type { NavDataCounts } from "@/services/navigation"
 
-const NAV_ITEMS: NavItem[] = [
-  { label: "About", href: "/#about" },
-  { label: "Skills", href: "/#skills" },
-  { label: "Projects", href: "/#projects" },
-  { label: "Experience", href: "/#experience" },
-  { label: "Gallery", href: "/#gallery" },
-  { label: "Blog", href: "/blog" },
-  { label: "Contact", href: "/contact" },
+export interface NavLinkItem {
+  label: string
+  href: string
+  key: keyof NavDataCounts | "home" | "contact"
+}
+
+export const ALL_NAV_ITEMS: NavLinkItem[] = [
+  { label: "Home", href: "/", key: "home" },
+  { label: "About", href: "/about", key: "about" },
+  { label: "Projects", href: "/projects", key: "projects" },
+  { label: "Blog", href: "/blog", key: "blog" },
+  { label: "Skills", href: "/skills", key: "skills" },
+  { label: "Experience", href: "/experience", key: "experience" },
+  { label: "Education", href: "/education", key: "education" },
+  { label: "Certificates", href: "/certificates", key: "certificates" },
+  { label: "Hackathons", href: "/hackathons", key: "hackathons" },
+  { label: "Achievements", href: "/achievements", key: "achievements" },
+  { label: "Leadership", href: "/leadership", key: "leadership" },
+  { label: "Volunteering", href: "/volunteering", key: "volunteering" },
+  { label: "Gallery", href: "/gallery", key: "gallery" },
+  { label: "Contact", href: "/contact", key: "contact" },
 ]
 
 interface NavbarProps {
   logoText?: string
+  navCounts?: NavDataCounts
 }
 
-export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
+export function Navbar({ logoText = "<Dev/>", navCounts }: NavbarProps) {
   const pathname = usePathname()
   const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [activeSection, setActiveSection] = useState("")
   const { isMobileMenuOpen, toggleMobileMenu, setMobileMenuOpen } = useUIStore()
   const menuRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -37,37 +50,14 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
     setMounted(true)
   }, [])
 
-  // Track active section on scroll
-  useEffect(() => {
-    if (pathname !== "/") {
-      setActiveSection("")
-      return
-    }
-
-    const observerOptions = {
-      root: null,
-      rootMargin: "-20% 0px -60% 0px",
-      threshold: 0,
-    }
-
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(`#${entry.target.id}`)
-        }
-      })
-    }
-
-    const observer = new IntersectionObserver(handleIntersection, observerOptions)
-    
-    const sections = ["about", "skills", "projects", "experience", "gallery", "contact"]
-    sections.forEach((id) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
+  // Filter navigation items dynamically if navCounts is present
+  const navItems = useMemo(() => {
+    if (!navCounts) return ALL_NAV_ITEMS
+    return ALL_NAV_ITEMS.filter((item) => {
+      if (item.key === "home" || item.key === "contact") return true
+      return (navCounts[item.key as keyof NavDataCounts] ?? 1) > 0
     })
-
-    return () => observer.disconnect()
-  }, [pathname])
+  }, [navCounts])
 
   // Scroll detection for navbar styling
   useEffect(() => {
@@ -119,10 +109,8 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
   }, [isMobileMenuOpen, setMobileMenuOpen])
 
   const checkActive = (itemHref: string) => {
-    if (itemHref.startsWith("/#")) {
-      return mounted && pathname === "/" && activeSection === itemHref.substring(1)
-    }
-    return pathname === itemHref
+    if (itemHref === "/") return pathname === "/"
+    return pathname.startsWith(itemHref)
   }
 
   return (
@@ -136,7 +124,7 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
         className={cn(
           "fixed top-0 right-0 left-0 z-50 transition-all duration-500",
           scrolled
-            ? "border-b border-white/10 bg-black/60 shadow-2xl backdrop-blur-xl"
+            ? "border-b border-white/10 bg-black/75 shadow-2xl backdrop-blur-xl"
             : "bg-transparent"
         )}
       >
@@ -151,8 +139,8 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
             </Link>
 
             {/* Desktop Nav */}
-            <ul className="hidden items-center gap-1 md:flex" suppressHydrationWarning>
-              {NAV_ITEMS.map((item) => {
+            <ul className="hidden items-center gap-1 xl:gap-1.5 md:flex" suppressHydrationWarning>
+              {navItems.map((item) => {
                 const isActive = checkActive(item.href)
                 return (
                   <li key={item.href} suppressHydrationWarning>
@@ -160,14 +148,14 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
                       href={item.href}
                       suppressHydrationWarning
                       className={cn(
-                        "relative rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-300",
-                        "text-white/70 hover:text-white"
+                        "relative rounded-lg px-2.5 py-1.5 xl:px-3.5 xl:py-2 text-xs xl:text-sm font-medium transition-colors duration-300",
+                        isActive ? "text-white font-semibold" : "text-white/70 hover:text-white"
                       )}
                     >
                       {mounted && isActive && (
                         <motion.span
                           layoutId="activeNavIndicator"
-                          className="absolute inset-0 rounded-lg bg-white/5"
+                          className="absolute inset-0 rounded-lg bg-white/10"
                           transition={{ type: "spring", stiffness: 380, damping: 30 }}
                         />
                       )}
@@ -216,22 +204,22 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
               transition={{ duration: 0.3, ease: easings.inOut }}
               className="overflow-hidden border-b border-white/10 bg-black/95 backdrop-blur-2xl md:hidden"
             >
-              <ul className="space-y-1 px-4 py-5">
-                {NAV_ITEMS.map((item, i) => (
+              <ul className="grid grid-cols-2 gap-1 px-4 py-4 max-h-[70vh] overflow-y-auto">
+                {navItems.map((item, i) => (
                   <motion.li
                     key={item.href}
                     initial={{ opacity: 0, x: -15 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.04, ease: easings.out }}
+                    transition={{ delay: i * 0.02, ease: easings.out }}
                   >
                     <Link
                       href={item.href}
                       suppressHydrationWarning
                       onClick={() => setMobileMenuOpen(false)}
                       className={cn(
-                        "block rounded-xl px-4 py-3 text-sm font-medium transition-all",
+                        "block rounded-xl px-3 py-2.5 text-xs font-medium transition-all",
                         checkActive(item.href)
-                          ? "bg-white/5 text-white"
+                          ? "bg-white/10 text-white font-semibold"
                           : "text-white/70 hover:bg-white/5 hover:text-white"
                       )}
                     >
@@ -242,14 +230,14 @@ export function Navbar({ logoText = "<Dev/>" }: NavbarProps) {
                 <motion.li
                   initial={{ opacity: 0, x: -15 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: NAV_ITEMS.length * 0.04, ease: easings.out }}
-                  className="pt-3"
+                  transition={{ delay: navItems.length * 0.02, ease: easings.out }}
+                  className="col-span-2 pt-2"
                 >
                   <Link
                     href="/contact"
                     suppressHydrationWarning
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-center text-sm font-medium text-white shadow-lg shadow-blue-500/20"
+                    className="block w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2.5 text-center text-sm font-medium text-white shadow-lg shadow-blue-500/20"
                   >
                     Hire Me
                   </Link>

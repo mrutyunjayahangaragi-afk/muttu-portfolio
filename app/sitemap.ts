@@ -1,18 +1,28 @@
 import type { MetadataRoute } from "next"
 import { getProjectSlugs } from "@/services/projects"
-import { getCertificateSlugs, getHackathonSlugs } from "@/services/career"
+import { getHackathonSlugs } from "@/services/career"
 import { createBrowserClient } from "@supabase/ssr"
 import type { Blog } from "@/types"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com"
 
-  // Base routes
-  const routes = [
+  // Public base routes
+  const publicRoutes = [
     "",
-    "/blog",
+    "/about",
     "/projects",
-    "/admin",
+    "/blog",
+    "/skills",
+    "/experience",
+    "/education",
+    "/certificates",
+    "/hackathons",
+    "/achievements",
+    "/leadership",
+    "/volunteering",
+    "/gallery",
+    "/contact",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
@@ -34,20 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Failed to generate sitemap for projects:", e)
   }
 
-  // Dynamic certificate routes
-  let certificateRoutes: MetadataRoute.Sitemap = []
-  try {
-    const certSlugs = await getCertificateSlugs()
-    certificateRoutes = certSlugs.map((slug) => ({
-      url: `${baseUrl}/certificates/${slug}`,
-      lastModified: new Date().toISOString(),
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    }))
-  } catch (e) {
-    console.error("Failed to generate sitemap for certificates:", e)
-  }
-
   // Dynamic hackathon routes
   let hackathonRoutes: MetadataRoute.Sitemap = []
   try {
@@ -62,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Failed to generate sitemap for hackathons:", e)
   }
 
-  // Dynamic blog routes (using anon client to avoid cookies())
+  // Dynamic blog routes
   let blogRoutes: MetadataRoute.Sitemap = []
   try {
     const supabase = createBrowserClient(
@@ -86,9 +82,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   return [
-    ...routes,
+    ...publicRoutes,
     ...projectRoutes,
-    ...certificateRoutes,
     ...hackathonRoutes,
     ...blogRoutes,
   ]

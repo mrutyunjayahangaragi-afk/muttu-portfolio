@@ -16,6 +16,9 @@ import { AiChatWrapper } from "@/features/ai/ai-chat-wrapper"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
+import { getThemeConfigData } from "@/services/system"
+import { getNavDataCounts } from "@/services/navigation"
+
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
 const inter = Inter({
@@ -85,8 +88,6 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-import { getThemeConfigData } from "@/services/system"
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Determine whether we're in an admin route to suppress public chrome.
   const headersList = await headers()
@@ -94,11 +95,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isAdminRoute = pathname.startsWith("/admin")
 
   let logoText = "<Dev/>"
+  let navCounts
+
   try {
-    const themeConfig = await getThemeConfigData()
+    const [themeConfig, counts] = await Promise.all([
+      getThemeConfigData().catch(() => null),
+      getNavDataCounts().catch(() => undefined),
+    ])
     if (themeConfig?.logo_text) {
       logoText = themeConfig.logo_text
     }
+    navCounts = counts
   } catch (err) {
     // Fallback if DB fetch fails during build
   }
@@ -146,12 +153,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <LoadingScreen />
             <CustomCursor />
             <ScrollProgress />
-            <Navbar logoText={logoText} />
+            <Navbar logoText={logoText} navCounts={navCounts} />
             <PageTransition>
               <div id="content">{children}</div>
             </PageTransition>
             <AiChatWrapper />
-            <Footer logoText={logoText} />
+            <Footer logoText={logoText} navCounts={navCounts} />
             <Toaster />
             <Analytics />
             <SpeedInsights />

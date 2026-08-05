@@ -2,13 +2,14 @@ import type { Metadata } from "next"
 import { getAchievements } from "@/services/career"
 import { AchievementsGrid } from "@/features/career/achievements-grid"
 import { SectionHero } from "@/features/career/section-hero"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export const metadata: Metadata = {
   title: "Achievements",
   description:
     "Awards, rankings, scholarships, publications, and milestones from my career in software engineering.",
   openGraph: {
-    title: "Achievements",
+    title: "Achievements & Awards",
     description: "Awards, rankings, scholarships, and key milestones.",
   },
 }
@@ -27,7 +28,11 @@ export default async function AchievementsPage() {
           description="Awards, rankings, scholarships, and milestones that mark my journey as a developer."
           gradient="from-yellow-400 via-orange-400 to-red-400"
         />
-        <AchievementsGrid achievements={achievements} />
+        {achievements.length === 0 ? (
+          <EmptyState title="Achievements" message="Content will be available soon." />
+        ) : (
+          <AchievementsGrid achievements={achievements} />
+        )}
       </div>
     </main>
   )

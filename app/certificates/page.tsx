@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getCertificates } from "@/services/career"
 import { CertificatesClient } from "@/features/career/certificates-client"
 import { SectionHero } from "@/features/career/section-hero"
+import { EmptyState } from "@/components/ui/empty-state"
 
 export const metadata: Metadata = {
   title: "Certificates",
@@ -27,7 +28,11 @@ export default async function CertificatesPage() {
           description="Professional certificates and credentials I've earned — verified, filterable, and downloadable."
           gradient="from-emerald-400 via-teal-400 to-cyan-400"
         />
-        <CertificatesClient certificates={certificates} />
+        {certificates.length === 0 ? (
+          <EmptyState title="Certificates" message="Content will be available soon." />
+        ) : (
+          <CertificatesClient certificates={certificates} />
+        )}
       </div>
     </main>
   )
