@@ -75,7 +75,10 @@ export async function updateSession(request: NextRequest) {
     }
 
     const adminEmail = process.env.ADMIN_EMAIL
-    if (!adminEmail || user.email?.toLowerCase() !== adminEmail.toLowerCase()) {
+    const userEmail = user.email?.toLowerCase().trim()
+    const targetAdminEmail = adminEmail?.toLowerCase().trim()
+
+    if (!targetAdminEmail || userEmail !== targetAdminEmail) {
       return NextResponse.redirect(new URL("/admin?unauthorized=1", request.url))
     }
   }
