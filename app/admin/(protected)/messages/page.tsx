@@ -1,29 +1,34 @@
-import { Metadata } from "next"
-import { createClient } from "@/lib/supabase/server"
-import { MessagesClient } from "@/features/admin/messages-client"
-import type { ContactMessage } from "@/types"
+import type { Metadata } from "next"
+import { requireAdmin } from "@/lib/auth"
+import { getContactMessages, getMessageStats, getMessageAnalytics } from "@/services/messages"
+import { AdminPageHeader } from "@/features/admin/admin-page-header"
+import { MessagesDashboardClient } from "@/features/admin/messages-dashboard-client"
 
 export const metadata: Metadata = {
-  title: "Contact Messages | Admin Dashboard",
+  title: "Messages & Lead Management — Admin",
+  robots: { index: false, follow: false },
 }
 
 export default async function MessagesAdminPage() {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from("contact_messages")
-    .select("*")
-    .order("created_at", { ascending: false })
+  await requireAdmin()
 
-  const messages: ContactMessage[] = data || []
+  const [messages, stats, analytics] = await Promise.all([
+    getContactMessages(),
+    getMessageStats(),
+    getMessageAnalytics(),
+  ])
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-white">Contact Messages</h1>
-        <p className="mt-2 text-white/50">View and manage messages sent from your portfolio contact form.</p>
-      </div>
-
-      <MessagesClient initialMessages={messages} />
+      <AdminPageHeader
+        title="Messages & Lead Management"
+        description="View contact submissions, manage client leads, inspect attachments, track inquiry analytics, and send email replies."
+      />
+      <MessagesDashboardClient
+        initialMessages={messages}
+        stats={stats}
+        analytics={analytics}
+      />
     </div>
   )
 }

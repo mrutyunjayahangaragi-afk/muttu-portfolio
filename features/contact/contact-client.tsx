@@ -1,11 +1,11 @@
 "use client"
 
-import { useActionState, useEffect, useRef } from "react"
+import { useActionState, useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
-import { Send, Mail, MapPin, FileText, CheckCircle2, AlertCircle, Phone } from "lucide-react"
+import { Send, Mail, MapPin, FileText, CheckCircle2, AlertCircle, Phone, Briefcase } from "lucide-react"
 import { submitContactMessage } from "@/app/contact/actions"
+import { HireMeModal } from "@/components/modals/hire-me-modal"
 import type { Settings, SocialLink, Resume } from "@/types"
-
 import type { ActionResult } from "@/types/actions"
 
 const initialState: ActionResult = {
@@ -22,6 +22,7 @@ interface ContactClientProps {
 export function ContactClient({ settings, socialLinks, latestResume }: ContactClientProps) {
   const [state, formAction, isPending] = useActionState(submitContactMessage, initialState)
   const formRef = useRef<HTMLFormElement>(null)
+  const [isHireMeOpen, setIsHireMeOpen] = useState(false)
 
   useEffect(() => {
     if (state.success) {
@@ -41,11 +42,22 @@ export function ContactClient({ settings, socialLinks, latestResume }: ContactCl
             <Mail size={32} />
           </div>
           <h1 className="mb-6 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Let&apos;s <span className="text-emerald-400">Connect</span>
+            Let&apos;s <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Connect</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-white/50">
-            Have a project in mind, a question, or just want to say hi? I&apos;d love to hear from you.
+            Have a project in mind, a question, or want to discuss a full-stack engineering role? I&apos;d love to hear from you.
           </p>
+
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setIsHireMeOpen(true)}
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium hover:from-blue-500 hover:to-purple-500 transition-all shadow-lg shadow-blue-500/20"
+            >
+              <Briefcase size={18} />
+              Open Hire Me Modal
+            </button>
+          </div>
         </motion.div>
 
         <div className="grid gap-12 lg:grid-cols-2">
@@ -238,6 +250,9 @@ export function ContactClient({ settings, socialLinks, latestResume }: ContactCl
           </motion.div>
         </div>
       </div>
+
+      {/* Hire Me Glassmorphism Modal */}
+      <HireMeModal isOpen={isHireMeOpen} onClose={() => setIsHireMeOpen(false)} />
     </div>
   )
 }
