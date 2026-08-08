@@ -39,7 +39,7 @@ export function HeroContent({ profile, stats, hero3DConfig, hero3DContent }: Her
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pt-20 pb-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[calc(100vh-80px)]">
             <HeroLeft profile={profile} stats={stats} />
-            <div className="h-[400px] lg:h-[600px]">
+            <div className="relative h-[400px] lg:h-[600px]">
               <HeroRight config={hero3DConfig} content={hero3DContent} />
             </div>
           </div>

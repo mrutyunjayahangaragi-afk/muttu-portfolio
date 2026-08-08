@@ -3,10 +3,17 @@
 import { useState, useEffect } from "react"
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false)
+  const [matches, setMatches] = useState<boolean>(() => {
+    // On the server (SSR) window is undefined — default to false.
+    // On the client, read the real value immediately so the first render
+    // is correct and avoids a hydration flash.
+    if (typeof window === "undefined") return false
+    return window.matchMedia(query).matches
+  })
 
   useEffect(() => {
     const media = window.matchMedia(query)
+    // Sync in case the query changed after mount
     setMatches(media.matches)
 
     const listener = (e: MediaQueryListEvent) => setMatches(e.matches)
